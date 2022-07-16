@@ -339,7 +339,7 @@ class TextToSpeech:
         if voice_samples is not None:
             auto_conditioning, diffusion_conditioning, auto_conds, _ = self.get_conditioning_latents(voice_samples, return_mels=True)
         elif conditioning_latents is not None:
-            auto_conditioning, diffusion_conditioning = conditioning_latents
+            auto_conditioning, diffusion_conditioning, auto_conds = conditioning_latents
         else:
             auto_conditioning, diffusion_conditioning = self.get_random_conditioning_latents()
         auto_conditioning = auto_conditioning.to(self.device)
@@ -368,7 +368,7 @@ class TextToSpeech:
                 padding_needed = max_mel_tokens - codes.shape[1]
                 codes = F.pad(codes, (0, padding_needed), value=stop_mel_token)
                 samples.append(codes)
-            self.autoregressive = self.autoregressive.cpu()
+            self.autoregressive = self.autoregressive.cuda(self.device)
 
             clip_results = []
             self.clvp = self.clvp.to(self.device)
